@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-weight: 100 900;
+
+  src:
+    url("/fonts/manrope-variable.woff2") format("woff2 supports variations"),
+    url("/fonts/manrope-variable.woff2") format("woff2-variations");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 100 900;
+
+  src:
+    url("/fonts/roboto-variable.woff2") format("woff2 supports variations"),
+    url("/fonts/roboto-variable.woff2") format("woff2-variations");
+}
+
+@theme {
+  --font-manrope: "Manrope", sans-serif;
+  --font-roboto: "Roboto", sans-serif;
+  --color-blurple-300: #858afa;
+  --color-blurple-500: #6364ff;
+  --color-blurple-600: #563acc;
+  --color-blurple-900: #2f0c7a;
+  --color-nightshade-50: #fcefff;
+  --color-nightshade-100: #bd8dc8;
+  --color-nightshade-300: #834491;
+  --color-nightshade-600: #4e155a;
+  --color-nightshade-900: #1d0023;
+  --color-eggplant: #17063b;
+  --color-lime: #baff3b;
+  --color-goldenrod: #ffbe2e;
+}
+
+body {
+  font-family: var(--font-roboto);
+  background: var(--color-slate-100);
+}
