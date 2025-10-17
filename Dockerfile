@@ -7,7 +7,7 @@ COPY package.json package-lock.json ./
 # Install packages + server for static pages
 RUN \
     npm install \
-    npm i -g serve
+    && npm i -g serve
 
 COPY . .
 
