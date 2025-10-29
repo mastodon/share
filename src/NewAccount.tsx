@@ -9,8 +9,11 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
 
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
+  const [showResults, setShowResults] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const accessibilityId = useId();
+  const cleanValue = value.replace(/^@/, "");
+  const domain = cleanValue.split("@")[1];
 
   const serversQuery = useQuery({
     queryKey: ["servers"],
@@ -30,7 +33,7 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
 
   const results = useFuzzySearchList({
     list: serversQuery.data ?? [],
-    queryText: value.split("@")[1] ?? "",
+    queryText: domain ?? "",
     key: "domain",
     mapResultItem: ({ item, matches: [highlightRanges] }) => ({
       item,
@@ -40,6 +43,12 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
+
+    if (e.target.value.replace(/^@/, "").includes("@")) {
+      setShowResults(true);
+    } else {
+      setShowResults(false);
+    }
   }, []);
 
   const handleFocus = useCallback(() => {
@@ -50,9 +59,23 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
     setFocused(false);
   }, []);
 
-  const submit = useCallback(
-    (value: string) => {
-      const [, domain] = value.split("@");
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const domain = e.currentTarget.getAttribute("data-domain") ?? "";
+      const username = cleanValue.split("@")[0];
+      const newValue = `${username}@${domain}`;
+
+      setValue(newValue);
+      setShowResults(false);
+    },
+    [cleanValue],
+  );
+
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+
+      const [, domain] = cleanValue.split("@");
 
       if (!domain) {
         return;
@@ -60,7 +83,9 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
 
       setSubmitting(true);
 
-      fetch(`https://${domain}/.well-known/webfinger?resource=acct:${value}`)
+      fetch(
+        `https://${domain}/.well-known/webfinger?resource=acct:${cleanValue}`,
+      )
         .then((response) => {
           if (!response.ok) {
             throw new Error("Unexpected response");
@@ -107,36 +132,14 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
           setSubmitting(false);
         });
     },
-    [dispatch],
+    [dispatch, cleanValue],
   );
-
-  const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      const domain = e.currentTarget.getAttribute("data-domain") ?? "";
-      const username = value.split("@")[0];
-      const newValue = `${username}@${domain}`;
-
-      setValue(newValue);
-      submit(newValue);
-    },
-    [value, submit],
-  );
-
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      submit(value);
-    },
-    [value, submit],
-  );
-
-  const showResults = value.includes("@");
 
   return (
     <>
       <form onSubmit={handleSubmit}>
         <div className="relative">
-          <label for={accessibilityId} className="block font-bold mb-2">
+          <label htmlFor={accessibilityId} className="block font-bold mb-2">
             Your address on Mastodon
           </label>
 
@@ -167,7 +170,7 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
                   data-domain={item.domain}
                   onClick={handleClick}
                 >
-                  {value.split("@")[0]}@
+                  {cleanValue.split("@")[0]}@
                   <Highlight
                     text={item.domain}
                     ranges={highlightRanges}
