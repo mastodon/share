@@ -6,12 +6,13 @@ import "./index.css";
 import App from "./App.tsx";
 import { Provider } from "react-redux";
 import store from "./store";
+import messages from "../lang/en.json";
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <IntlProvider locale="en">
+    <IntlProvider locale="en" messages={messages}>
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
           <App />

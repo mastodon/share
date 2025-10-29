@@ -4,5 +4,21 @@ import tailwindcss from "@tailwindcss/vite";
 import svgr from "vite-plugin-svgr";
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss(), svgr()],
+  plugins: [
+    react({
+      babel: {
+        plugins: [
+          [
+            "formatjs",
+            {
+              idInterpolationPattern: "[sha512:contenthash:base64:6]",
+              ast: true,
+            },
+          ],
+        ],
+      },
+    }),
+    tailwindcss(),
+    svgr(),
+  ],
 });

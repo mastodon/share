@@ -3,6 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useFuzzySearchList, Highlight } from "@nozbe/microfuzz/react";
 import { addAccount } from "./actions";
 import { useAppDispatch } from "./store";
+import { useIntl, defineMessages, FormattedMessage } from "react-intl";
+
+const messages = defineMessages({
+  placeholder: { id: "", defaultMessage: "E.g. username@somewhere.social" },
+});
 
 interface WebfingerResponseJSON {
   links: {
@@ -26,6 +31,7 @@ interface ServerResponseJSON {
 
 export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
   const dispatch = useAppDispatch();
+  const intl = useIntl();
 
   const [value, setValue] = useState("");
   const [focused, setFocused] = useState(false);
@@ -150,7 +156,9 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
             }),
           );
 
-          window.location.href = `https://${domain}/share?text=${encodeURIComponent(params.get("text") ?? "")}`;
+          setTimeout(() => {
+            window.location.href = `https://${domain}/share?text=${encodeURIComponent(params.get("text") ?? "")}`;
+          }, 100);
         })
         .catch(() => {
           setSubmitting(false);
@@ -164,7 +172,7 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
       <form onSubmit={handleSubmit}>
         <div className="relative">
           <label htmlFor={accessibilityId} className="block font-bold mb-2">
-            Your address on Mastodon
+            <FormattedMessage id="" defaultMessage="Your address on Mastodon" />
           </label>
 
           <div
@@ -173,7 +181,7 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
             <input
               className="text-black flex-grow p-3 border-0 focus:outline-0"
               type="text"
-              placeholder="E.g. username@somewhere.social"
+              placeholder={intl.formatMessage(messages.placeholder)}
               value={value}
               onChange={handleChange}
               onFocus={handleFocus}
@@ -211,18 +219,26 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
           className="mt-4 flex-none w-full bg-blurple-500 text-white text-base text-center font-bold px-4 py-3 rounded-md cursor-pointer hover:bg-blurple-600"
           type="submit"
         >
-          Continue{submitting && "..."}
+          <FormattedMessage id="" defaultMessage="Continue" />
+          {submitting && "..."}
         </button>
       </form>
 
       <p className="text-center mt-3">
-        Not on Mastodon yet?{" "}
-        <a
-          href="https://mastodon.social/auth/sign_up"
-          className="text-blurple-500 hover:underline"
-        >
-          Create an account
-        </a>
+        <FormattedMessage
+          id=""
+          defaultMessage="Not on Mastodon yet? <a>Create an account</a>"
+          values={{
+            a: (f) => (
+              <a
+                href="https://mastodon.social/auth/sign_up"
+                className="text-blurple-500 hover:underline"
+              >
+                {f}
+              </a>
+            ),
+          }}
+        />
       </p>
     </>
   );

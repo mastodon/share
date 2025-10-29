@@ -7,10 +7,12 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "fix": "eslint . --cache --fix",
     "preview": "vite preview",
     "format": "prettier --write --log-level warn .",
     "prepare": "husky",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "i18n:extract": "formatjs extract 'src/**/*.ts*' --ignore='**/*.d.ts' --out-file temp.json --flatten --id-interpolation-pattern '[sha512:contenthash:base64:6]' && formatjs compile 'temp.json' --out-file lang/en.json && rm temp.json"
   },
   "dependencies": {
     "@nozbe/microfuzz": "^1.0.0",
@@ -26,9 +28,11 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@formatjs/cli": "^6.7.4",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
+    "babel-plugin-formatjs": "^10.5.41",
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",

@@ -2,6 +2,11 @@ import { useCallback } from "react";
 import { removeAccount } from "./actions";
 import { useAppDispatch } from "./store";
 import DeleteIcon from "./assets/delete.svg?react";
+import { useIntl, defineMessages } from "react-intl";
+
+const messages = defineMessages({
+  delete: { id: "", defaultMessage: "Delete" },
+});
 
 export const SavedAccount: React.FC<{
   domain: string;
@@ -11,6 +16,7 @@ export const SavedAccount: React.FC<{
 }> = ({ domain, username, avatar, displayName }) => {
   const dispatch = useAppDispatch();
   const params = new URLSearchParams(window.location.search);
+  const intl = useIntl();
 
   const handleClick = useCallback(() => {
     dispatch(removeAccount({ username, domain }));
@@ -40,6 +46,7 @@ export const SavedAccount: React.FC<{
       <button
         className="text-slate-300 cursor-pointer p-2 hover:text-slate-400"
         onClick={handleClick}
+        title={intl.formatMessage(messages.delete)}
       >
         <DeleteIcon className="icon" />
       </button>
