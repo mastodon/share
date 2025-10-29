@@ -4,6 +4,26 @@ import { useFuzzySearchList, Highlight } from "@nozbe/microfuzz/react";
 import { addAccount } from "./actions";
 import { useAppDispatch } from "./store";
 
+interface WebfingerResponseJSON {
+  links: {
+    rel: string;
+    type: string;
+    href: string;
+  }[];
+}
+
+interface ActorResponseJSON {
+  name: string;
+  preferredUsername: string;
+  icon?: {
+    url: string;
+  };
+}
+
+interface ServerResponseJSON {
+  domain: string;
+}
+
 export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
   const dispatch = useAppDispatch();
 
@@ -15,7 +35,7 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
   const cleanValue = value.replace(/^@/, "");
   const domain = cleanValue.split("@")[1];
 
-  const serversQuery = useQuery({
+  const serversQuery = useQuery<ServerResponseJSON[]>({
     queryKey: ["servers"],
 
     queryFn: async () => {
@@ -93,11 +113,15 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
 
           return response.json();
         })
-        .then((json) => {
+        .then((json: WebfingerResponseJSON) => {
           const link = json.links.find(
             ({ rel, type }) =>
               rel === "self" && type === "application/activity+json",
           );
+
+          if (!link) {
+            throw new Error("Unexpected response");
+          }
 
           return fetch(link.href, {
             headers: {
@@ -112,7 +136,7 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
 
           return response.json();
         })
-        .then((json) => {
+        .then((json: ActorResponseJSON) => {
           const displayName = json.name ?? json.preferredUsername;
           const avatar = json.icon?.url;
           const params = new URLSearchParams(window.location.search);
@@ -126,7 +150,7 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
             }),
           );
 
-          window.location = `https://${domain}/share?text=${encodeURIComponent(params.get("text") ?? "")}`;
+          window.location.href = `https://${domain}/share?text=${encodeURIComponent(params.get("text") ?? "")}`;
         })
         .catch(() => {
           setSubmitting(false);

@@ -7,7 +7,7 @@ const saveState = (state: RootState) => {
   localStorage.setItem("state", json);
 };
 
-const loadState = (): RootState => {
+const loadState = (): RootState | undefined => {
   const json = localStorage.getItem("state");
   return json ? JSON.parse(json) : undefined;
 };

@@ -6,7 +6,7 @@ import DeleteIcon from "./assets/delete.svg?react";
 export const SavedAccount: React.FC<{
   domain: string;
   username: string;
-  avatar: string;
+  avatar?: string;
   displayName: string;
 }> = ({ domain, username, avatar, displayName }) => {
   const dispatch = useAppDispatch();
@@ -22,7 +22,11 @@ export const SavedAccount: React.FC<{
         className="flex flex-grow gap-3 items-center"
         href={`https://${domain}/share?text=${encodeURIComponent(params.get("text") ?? "")}`}
       >
-        <img src={avatar} alt="" className="rounded-lg h-12" />
+        {avatar ? (
+          <img src={avatar} alt="" className="rounded-lg aspect-square h-12" />
+        ) : (
+          <div className="rounded-lg bg-slate-200 aspect-square h-12" />
+        )}
         <div>
           <div className="text-base text-slate-800 font-bold">
             {displayName}
