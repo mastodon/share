@@ -29,6 +29,15 @@ interface ServerResponseJSON {
   domain: string;
 }
 
+const isValidDomain = (str: string): boolean => {
+  try {
+    const url = new URL(`https://${str}`);
+    return url.hostname === str;
+  } catch {
+    return false;
+  }
+};
+
 export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
@@ -38,7 +47,7 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
   const [showResults, setShowResults] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const accessibilityId = useId();
-  const cleanValue = value.replace(/^@/, "");
+  const cleanValue = value.trim().replace(/^@/, "");
   const domain = cleanValue.split("@")[1];
 
   const serversQuery = useQuery<ServerResponseJSON[]>({
@@ -103,7 +112,7 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
 
       const [username, domain] = cleanValue.split("@");
 
-      if (!domain) {
+      if (!domain || !isValidDomain(domain)) {
         return;
       }
 
@@ -202,7 +211,7 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
             />
           </div>
 
-          {showResults && (
+          {showResults && results.length > 0 && (
             <div
               className={`absolute top-full mt-[-1px] w-full flex flex-col bg-white border border-t-0 rounded-b-md p-1 ${focused ? "border-blurple-500" : "border-slate-200"}`}
             >
