@@ -101,11 +101,14 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
     (e: React.FormEvent) => {
       e.preventDefault();
 
-      const [, domain] = cleanValue.split("@");
+      const [username, domain] = cleanValue.split("@");
 
       if (!domain) {
         return;
       }
+
+      const params = new URLSearchParams(window.location.search);
+      const redirectUrl = `https://${domain}/share?text=${encodeURIComponent(params.get("text") ?? "")}`;
 
       setSubmitting(true);
 
@@ -145,7 +148,6 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
         .then((json: ActorResponseJSON) => {
           const displayName = json.name ?? json.preferredUsername;
           const avatar = json.icon?.url;
-          const params = new URLSearchParams(window.location.search);
 
           dispatch(
             addAccount({
@@ -157,11 +159,21 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
           );
 
           setTimeout(() => {
-            window.location.href = `https://${domain}/share?text=${encodeURIComponent(params.get("text") ?? "")}`;
+            window.location.href = redirectUrl;
           }, 100);
         })
         .catch(() => {
-          setSubmitting(false);
+          dispatch(
+            addAccount({
+              domain,
+              displayName: username,
+              username,
+            }),
+          );
+
+          setTimeout(() => {
+            window.location.href = redirectUrl;
+          }, 100);
         });
     },
     [dispatch, cleanValue],
@@ -169,7 +181,7 @@ export const NewAccount: React.FC<{ onDismiss: () => void }> = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} autoComplete="off">
         <div className="relative">
           <label htmlFor={accessibilityId} className="block font-bold mb-2">
             <FormattedMessage id="" defaultMessage="Your address on Mastodon" />
