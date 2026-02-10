@@ -1,3 +1,14 @@
 .icon path {
   fill: currentColor;
 }
+
+.share-button-preview a {
+  color: var(--color-blurple-500);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.share-button-preview svg {
+  height: 1em;
+}
