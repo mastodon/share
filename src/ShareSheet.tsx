@@ -3,6 +3,7 @@ import { NewAccount } from "./NewAccount";
 import { useAppSelector } from "./store";
 import { SavedAccount } from "./SavedAccount";
 import AddIcon from "./assets/add.svg?react";
+import { FormattedMessage } from "react-intl";
 
 export const ShareSheet = () => {
   const accounts = useAppSelector((state) => state.accounts);
@@ -20,7 +21,7 @@ export const ShareSheet = () => {
   return (
     <>
       <h1 className="text-black text-xl font-bold mb-8 text-center">
-        Which account would you like to share from?
+        <FormattedMessage defaultMessage="Which account would you like to share from?" />
       </h1>
 
       {displayForm ? (
@@ -38,7 +39,8 @@ export const ShareSheet = () => {
             className="w-full flex gap-2 items-center p-4 font-bold cursor-pointer hover:bg-slate-50"
             onClick={handleClick}
           >
-            <AddIcon className="icon" /> Add another account
+            <AddIcon className="icon" />{" "}
+            <FormattedMessage defaultMessage="Add another account" />
           </button>
         </div>
       )}

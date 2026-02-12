@@ -1,9 +1,10 @@
 import { useState, useCallback } from "react";
+import { FormattedMessage } from "react-intl";
 
 const SHARE_URL = "https://share.joinmastodon.org";
 
 export const Instructions = () => {
-  const [text, setText] = useState("Hello world");
+  const [text, setText] = useState("");
   const [type, setType] = useState("url");
   const [copied, setCopied] = useState(false);
 
@@ -30,19 +31,36 @@ export const Instructions = () => {
   return (
     <>
       <h1 className="text-black text-xl font-bold mb-8 text-center">
-        Add a Share to Mastodon button to your website
+        <FormattedMessage defaultMessage='Add a "Share to Mastodon" button to your website' />
       </h1>
+
+      <p className="text-base text-slate-500 mb-8">
+        <FormattedMessage defaultMessage='With this tool you can add a "Share to Mastodon" button to your own website, which will allow your visitors to easily share a text snippet of your choosing from their own Mastodon account.' />
+      </p>
 
       <div className="flex flex-col gap-4">
         <label className="block w-full">
           <strong className="block font-medium mb-4">
-            What would you like to share?
+            <FormattedMessage defaultMessage="What would you like to share?" />
           </strong>
           <input
             value={text}
             onChange={handleChange}
+            placeholder="https://link.to.my/article"
             className="block w-full text-black p-3 border bg-white rounded-md border-slate-200 focus:border-blurple-500 focus:outline-0"
           />
+          <p className="mt-4 text-sm text-slate-500">
+            <FormattedMessage
+              defaultMessage="To make it dynamic, replace the <code>text</code> parameter in the code."
+              values={{
+                code: (str) => (
+                  <code className="bg-nightshade-50 border border-nightshade-100 text-nightshade-300 rounded-sm p-1 text-xs font-mono">
+                    {str}
+                  </code>
+                ),
+              }}
+            />
+          </p>
         </label>
 
         <div>
@@ -51,13 +69,13 @@ export const Instructions = () => {
               className={`p-2 cursor-pointer font-medium rounded ${type === "url" ? "bg-blurple-500 text-white" : "text-slate-900"}`}
               onClick={() => setType("url")}
             >
-              URL
+              <FormattedMessage defaultMessage="Link" />
             </button>
             <button
               className={`p-2 cursor-pointer font-medium rounded ${type === "html" ? "bg-blurple-500 text-white" : "text-slate-900"}`}
               onClick={() => setType("html")}
             >
-              HTML
+              <FormattedMessage defaultMessage="HTML code" />
             </button>
           </div>
 
@@ -73,13 +91,23 @@ export const Instructions = () => {
           onClick={handleCopy}
           className={`w-full ${copied ? "bg-green-600 transition-none duration-0" : "transition-colors duration-300 bg-blurple-500 hover:bg-blurple-600"} text-white text-base text-center font-bold px-4 py-3 rounded-md cursor-pointer`}
         >
-          Copy to clipboard
+          {copied ? (
+            <FormattedMessage defaultMessage="Copied" />
+          ) : (
+            <FormattedMessage defaultMessage="Copy to clipboard" />
+          )}
         </button>
       </div>
 
       {type === "html" && (
         <div className="mt-8">
-          <h2 className="block font-medium mb-4">Preview</h2>
+          <h2 className="block font-medium mb-4">
+            <FormattedMessage defaultMessage="Preview" />
+          </h2>
+
+          <p className="mb-4 text-sm text-slate-500">
+            <FormattedMessage defaultMessage="This is how the code above could look like on your website:" />
+          </p>
 
           <div
             className="share-button-preview flex items-center justify-center bg-slate-200 w-full h-40 rounded-md"

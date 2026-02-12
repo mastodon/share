@@ -1,7 +1,19 @@
 {
+  "/0wMWg": "To make it dynamic, replace the <code>text</code> parameter in the code.",
+  "0r0wl8": "Add a \"Share to Mastodon\" button to your website",
   "4yKRxJ": "Not on Mastodon yet? <a>Create an account</a>",
+  "C+U0FX": "With this tool you can add a \"Share to Mastodon\" button to your own website, which will allow your visitors to easily share a text snippet of your choosing from their own Mastodon account.",
+  "JBWS0c": "Link",
   "K3r6DQ": "Delete",
+  "MYiDbe": "Which account would you like to share from?",
+  "Q7RpjF": "What would you like to share?",
   "SJd271": "Your address on Mastodon",
+  "TJo5E6": "Preview",
+  "aCdAsI": "Copy to clipboard",
   "acrOoz": "Continue",
-  "pxcWa2": "E.g. username@somewhere.social"
+  "cU42T7": "Add another account",
+  "p556q3": "Copied",
+  "pxcWa2": "E.g. username@somewhere.social",
+  "qDAEvY": "This is how the code above could look like on your website:",
+  "wbL81k": "HTML code"
 }
