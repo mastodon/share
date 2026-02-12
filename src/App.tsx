@@ -3,6 +3,7 @@ import logo from "./assets/wordmark-white-text.svg";
 
 import { ShareSheet } from "./ShareSheet";
 import { Instructions } from "./Instructions";
+import { useTextParam } from "./utils";
 
 const Logo = () => (
   <div className="relative mb-30 font-manrope">
@@ -14,8 +15,7 @@ const Logo = () => (
 );
 
 function App() {
-  const params = new URLSearchParams(window.location.search);
-  const hasText = params.get("text")?.length > 0;
+  const hasText = useTextParam() !== null;
 
   return (
     <div className="w-full max-w-lg py-20 m-auto flex flex-col items-center">

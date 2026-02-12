@@ -3,6 +3,7 @@ import { removeAccount } from "./actions";
 import { useAppDispatch } from "./store";
 import DeleteIcon from "./assets/delete.svg?react";
 import { useIntl, defineMessages } from "react-intl";
+import { useTextParam } from "./utils";
 
 const messages = defineMessages({
   delete: { id: "", defaultMessage: "Delete" },
@@ -15,8 +16,8 @@ export const SavedAccount: React.FC<{
   displayName: string;
 }> = ({ domain, username, avatar, displayName }) => {
   const dispatch = useAppDispatch();
-  const params = new URLSearchParams(window.location.search);
   const intl = useIntl();
+  const text = useTextParam();
 
   const handleClick = useCallback(() => {
     dispatch(removeAccount({ username, domain }));
@@ -26,7 +27,7 @@ export const SavedAccount: React.FC<{
     <div className="flex w-full gap-3 items-center p-4">
       <a
         className="flex flex-grow gap-3 items-center"
-        href={`https://${domain}/share?text=${encodeURIComponent(params.get("text") ?? "")}`}
+        href={`https://${domain}/share?text=${encodeURIComponent(text ?? "")}`}
       >
         {avatar ? (
           <img src={avatar} alt="" className="rounded-lg aspect-square h-12" />

@@ -11,7 +11,7 @@ export const Instructions = () => {
     setText(target.value);
   }, []);
 
-  const url = `${SHARE_URL}/?text=${encodeURIComponent(text)}`;
+  const url = `${SHARE_URL}/#text=${encodeURIComponent(text)}`;
   const code =
     type === "url"
       ? url
