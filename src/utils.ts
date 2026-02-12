@@ -21,6 +21,10 @@ export const useTextParam = () => {
       }
     };
 
+    // Initial page load
+    handleChange();
+
+    // If the user navigates within the opened page
     window.addEventListener("popstate", handleChange);
 
     return () => {
