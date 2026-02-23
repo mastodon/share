@@ -21,7 +21,7 @@ export const ShareSheet = () => {
   return (
     <>
       <h1 className="text-black text-xl font-bold mb-8 text-center">
-        <FormattedMessage defaultMessage="Which account would you like to share from?" />
+        <FormattedMessage defaultMessage="Share to Mastodon" />
       </h1>
 
       {displayForm ? (

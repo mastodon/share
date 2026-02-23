@@ -1,19 +1,20 @@
 {
-  "/0wMWg": "To make it dynamic, replace the <code>text</code> parameter in the code.",
   "0r0wl8": "Add a \"Share to Mastodon\" button to your website",
   "4yKRxJ": "Not on Mastodon yet? <a>Create an account</a>",
-  "C+U0FX": "With this tool you can add a \"Share to Mastodon\" button to your own website, which will allow your visitors to easily share a text snippet of your choosing from their own Mastodon account.",
+  "EFcHaU": "HTML snippet",
   "JBWS0c": "Link",
+  "JJ5bOA": "Users can still customize the text before they post.",
   "K3r6DQ": "Delete",
-  "MYiDbe": "Which account would you like to share from?",
-  "Q7RpjF": "What would you like to share?",
+  "QFi/g3": "This website is <a>open-source</a>.",
   "SJd271": "Your address on Mastodon",
-  "TJo5E6": "Preview",
+  "ZV1Kqn": "Allow your visitors to easily share a text snippet of your choosing from their own Mastodon account by clicking a link or button on your own website. Want an example? <a>Share this page on Mastodon.</a>",
   "aCdAsI": "Copy to clipboard",
   "acrOoz": "Continue",
   "cU42T7": "Add another account",
+  "dxV0vc": "What would you like people to share?",
+  "i87oJD": "Use Mastodon logo",
+  "jBx4aL": "Include a small embedded SVG of the Mastodon logo in the snippet.",
   "p556q3": "Copied",
   "pxcWa2": "E.g. username@somewhere.social",
-  "qDAEvY": "This is how the code above could look like on your website:",
-  "wbL81k": "HTML code"
+  "vfd+74": "Share to Mastodon"
 }
