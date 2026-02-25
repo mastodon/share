@@ -1,35 +1,37 @@
 import { createReducer } from "@reduxjs/toolkit";
-import type { Account } from "../types";
-import { addAccount, removeAccount } from "../actions";
+import type { Domain } from "../types";
+import { addDomain, removeDomain } from "../actions";
 
 interface State {
-  accounts: Account[];
+  domains: Domain[];
 }
 
 const initialState: State = {
-  accounts: [],
+  domains: [],
 };
 
 export default createReducer(initialState, (builder) => {
   builder
-    .addCase(addAccount, (state, action) => {
-      if (
-        state.accounts.find(
-          (account) =>
-            account.username === action.payload.username &&
-            account.domain === action.payload.domain,
-        )
-      ) {
+    .addCase(addDomain, (state, action) => {
+      const index = state.domains.findIndex(
+        (domain) => domain.domain === action.payload,
+      );
+
+      if (index !== -1) {
+        state.domains[index].used += 1;
+        state.domains[index].lastUsed = new Date().toString();
         return;
       }
 
-      state.accounts.push(action.payload);
+      state.domains.push({
+        domain: action.payload,
+        used: 1,
+        lastUsed: new Date().toString(),
+      });
     })
-    .addCase(removeAccount, (state, action) => {
-      state.accounts = state.accounts.filter(
-        (account) =>
-          account.username !== action.payload.username ||
-          account.domain !== action.payload.domain,
+    .addCase(removeDomain, (state, action) => {
+      state.domains = state.domains.filter(
+        (domain) => domain.domain !== action.payload,
       );
     });
 });

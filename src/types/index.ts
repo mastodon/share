@@ -1,6 +1,5 @@
-export interface Account {
+export interface Domain {
   domain: string;
-  displayName: string;
-  avatar?: string;
-  username: string;
+  used: number;
+  lastUsed: string;
 }

@@ -1,14 +1,14 @@
 import { useState, useCallback } from "react";
-import { NewAccount } from "./NewAccount";
+import { NewDomain } from "./NewDomain";
 import { useAppSelector } from "./store";
-import { SavedAccount } from "./SavedAccount";
-import AddIcon from "./assets/add.svg?react";
+import { SavedDomain } from "./SavedDomain";
 import { FormattedMessage } from "react-intl";
+import { Preview } from "./Preview";
 
 export const ShareSheet = () => {
-  const accounts = useAppSelector((state) => state.accounts);
+  const domains = useAppSelector((state) => state.domains);
   const [adding, setAdding] = useState(false);
-  const displayForm = adding || accounts.length === 0;
+  const displayForm = adding || domains.length === 0;
 
   const handleClick = useCallback(() => {
     setAdding(true);
@@ -24,25 +24,33 @@ export const ShareSheet = () => {
         <FormattedMessage defaultMessage="Share to Mastodon" />
       </h1>
 
-      {displayForm ? (
-        <NewAccount onDismiss={handleDismiss} />
-      ) : (
-        <div className="w-full overflow-hidden mb-4 divide-slate-200 divide-y-1">
-          {accounts.map((account) => (
-            <SavedAccount
-              key={`${account.domain}/${account.username}`}
-              {...account}
-            />
-          ))}
+      <Preview />
 
-          <button
-            className="w-full flex gap-2 items-center p-4 font-bold cursor-pointer hover:bg-slate-50"
-            onClick={handleClick}
-          >
-            <AddIcon className="icon" />{" "}
-            <FormattedMessage defaultMessage="Add another account" />
-          </button>
-        </div>
+      {displayForm ? (
+        <NewDomain onDismiss={handleDismiss} />
+      ) : (
+        <>
+          <div className="mb-4 flex justify-between">
+            <h2 className="font-bold">
+              <FormattedMessage id="" defaultMessage="Your Mastodon domain" />
+            </h2>
+
+            <button
+              className="inline text-sm text-blurple-500 cursor-pointer hover:underline"
+              onClick={handleClick}
+            >
+              <FormattedMessage defaultMessage="Add another domain" />
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            {domains
+              .sort((a, b) => b.used - a.used)
+              .map((domain) => (
+                <SavedDomain key={domain.domain} {...domain} />
+              ))}
+          </div>
+        </>
       )}
     </>
   );
