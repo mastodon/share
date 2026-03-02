@@ -6,8 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
-    "fix": "eslint . --cache --fix",
+    "lint": "npm run lint:js && npm run lint:css",
+    "lint:css": "stylelint \"**/*.css\"",
+    "lint:js": "eslint .",
+    "fix": "npm run fix:js && npm run fix:css",
+    "fix:css": "stylelint --cache --fix \"**/*.css\"",
+    "fix:js": "eslint . --cache --fix",
     "preview": "vite preview",
     "format": "prettier --write --log-level warn .",
     "prepare": "husky",
@@ -41,6 +45,8 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.2.4",
     "prettier": "3.6.2",
+    "stylelint": "^17.4.0",
+    "stylelint-plugin-logical-css": "^2.0.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.2"
