@@ -189,7 +189,7 @@ export const NewDomain: React.FC<{ onDismiss: () => void }> = () => {
           values={{
             a: (f) => (
               <a
-                href="https://mastodon.social/auth/sign_up"
+                href="https://joinmastodon.org/servers"
                 className="text-blurple-500 hover:underline"
               >
                 {f}
