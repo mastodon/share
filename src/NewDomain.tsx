@@ -1,22 +1,39 @@
-import { useState, useCallback, useId } from "react";
+import { useState, useCallback, useId, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useFuzzySearchList, Highlight } from "@nozbe/microfuzz/react";
 import { addDomain } from "./actions";
 import { useAppDispatch } from "./store";
 import { FormattedMessage } from "react-intl";
 import { useTextParam } from "./utils";
+import { clsx } from "clsx";
 
 interface ServerResponseJSON {
   domain: string;
 }
 
 const isValidDomain = (str: string): boolean => {
+  // Highly unlikely someone has a Mastodon server running on a gTLD
+  if (str.indexOf(" ") !== -1 || str.indexOf(".") === -1) {
+    return false;
+  }
+
   try {
     const url = new URL(`https://${str}`);
     return url.hostname === str;
   } catch {
     return false;
   }
+};
+
+const extractDomain = (str: string): string => {
+  const value = str.trim().replace(/^@/, "");
+
+  if (value.indexOf("@") !== -1) {
+    const [, domain] = value.split("@");
+    return domain;
+  }
+
+  return value;
 };
 
 export const NewDomain: React.FC<{ onDismiss: () => void }> = () => {
@@ -27,8 +44,12 @@ export const NewDomain: React.FC<{ onDismiss: () => void }> = () => {
   const [focused, setFocused] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [refusing, setRefusing] = useState(false);
   const accessibilityId = useId();
-  const domain = value.trim();
+  const domain = extractDomain(value);
+
+  const inputRef = useRef<HTMLInputElement>();
+  const clickAreaRef = useRef<HTMLDivElement>();
 
   const serversQuery = useQuery<ServerResponseJSON[]>({
     queryKey: ["servers"],
@@ -70,8 +91,25 @@ export const NewDomain: React.FC<{ onDismiss: () => void }> = () => {
     setFocused(true);
   }, []);
 
-  const handleBlur = useCallback(() => {
-    setFocused(false);
+  // To handle input blur, we need a custom handler to avoid hiding the results
+  // when they are clicked, since then the click event would not be registered on them.
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        clickAreaRef.current?.contains(e.target) ||
+        inputRef.current?.contains(e.target)
+      ) {
+        return;
+      }
+
+      setFocused(false);
+    };
+
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
   }, []);
 
   const handleClick = useCallback(
@@ -98,6 +136,8 @@ export const NewDomain: React.FC<{ onDismiss: () => void }> = () => {
       e.preventDefault();
 
       if (!domain || !isValidDomain(domain)) {
+        setRefusing(true);
+        setTimeout(() => setRefusing(false), 500);
         return;
       }
 
@@ -112,6 +152,12 @@ export const NewDomain: React.FC<{ onDismiss: () => void }> = () => {
     },
     [dispatch, text, domain],
   );
+
+  const error =
+    (value.length > 0 &&
+      !isValidDomain(domain) &&
+      (!focused || results.length === 0)) ||
+    refusing;
 
   return (
     <>
@@ -136,21 +182,38 @@ export const NewDomain: React.FC<{ onDismiss: () => void }> = () => {
           </label>
 
           <div
-            className={`w-full flex items-center border bg-white rounded-md ${focused ? "border-blurple-500" : "border-slate-200"} ${showResults ? "rounded-b-none" : ""}`}
+            className={clsx(
+              "w-full flex items-center border bg-white rounded-md",
+              {
+                "border-blurple-500": focused && !error,
+                "border-slate-200": !focused && !error,
+                "border-red-500": error,
+                "rounded-b-none":
+                  focused && showResults && results.length > 0 && !refusing,
+              },
+            )}
           >
             <input
+              ref={inputRef}
               className="text-black flex-grow p-3 border-0 focus:outline-0"
               type="text"
+              autoComplete="off"
               value={value}
               onChange={handleChange}
               onFocus={handleFocus}
-              onBlur={handleBlur}
               id={accessibilityId}
             />
           </div>
 
-          {showResults && results.length > 0 && (
+          {error && value.length > 0 && (
+            <p className="text-sm mt-2 font-medium text-red-500">
+              <FormattedMessage defaultMessage="does not seem to be a valid domain name." />
+            </p>
+          )}
+
+          {focused && showResults && results.length > 0 && !refusing && (
             <div
+              ref={clickAreaRef}
               className={`absolute top-full mt-[-1px] w-full flex flex-col bg-white border border-t-0 rounded-b-md p-1 ${focused ? "border-blurple-500" : "border-slate-200"}`}
             >
               {results.slice(0, 5).map(({ item, highlightRanges }) => (
@@ -174,7 +237,10 @@ export const NewDomain: React.FC<{ onDismiss: () => void }> = () => {
         </div>
 
         <button
-          className="mt-4 flex-none w-full bg-blurple-500 text-white text-base text-center font-bold px-4 py-3 rounded-md cursor-pointer hover:bg-blurple-600"
+          className={clsx(
+            "mt-4 flex-none w-full bg-blurple-500 text-white text-base text-center font-bold px-4 py-3 rounded-md cursor-pointer hover:bg-blurple-600",
+            { "animate-shake": refusing, "animate-pulse": submitting },
+          )}
           type="submit"
         >
           <FormattedMessage id="" defaultMessage="Continue to Mastodon" />
