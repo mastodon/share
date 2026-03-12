@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { addDomain, removeDomain } from "./actions";
+import { clickDomain, removeDomain } from "./actions";
 import { useAppDispatch } from "./store";
 import DeleteIcon from "./assets/delete.svg?react";
 import { useIntl, defineMessages } from "react-intl";
@@ -11,13 +11,14 @@ const messages = defineMessages({
 
 export const SavedDomain: React.FC<{
   domain: string;
-}> = ({ domain }) => {
+  template: string;
+}> = ({ domain, template }) => {
   const dispatch = useAppDispatch();
   const intl = useIntl();
   const text = useTextParam();
 
   const handleClick = useCallback(() => {
-    dispatch(addDomain(domain));
+    dispatch(clickDomain(domain));
   }, [dispatch, domain]);
 
   const handleDeleteClick = useCallback(() => {
@@ -28,7 +29,10 @@ export const SavedDomain: React.FC<{
     <div className="flex bg-blurple-500 hover:bg-blurple-600 text-white rounded-4xl w-full gap-2 items-center">
       <a
         className="block w-full px-5 py-4"
-        href={`https://${domain}/share?text=${encodeURIComponent(text ?? "")}`}
+        href={(template ?? `https://${domain}/share?text={content}`).replace(
+          "{content}",
+          encodeURIComponent(text ?? ""),
+        )}
         onClick={handleClick}
       >
         <div className="font-bold">{domain}</div>

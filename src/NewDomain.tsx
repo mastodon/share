@@ -7,6 +7,14 @@ import { FormattedMessage } from "react-intl";
 import { useTextParam } from "./utils";
 import { clsx } from "clsx";
 
+interface WebfingerResponseJSON {
+  links: {
+    rel: string;
+    type: string;
+    href: string;
+  }[];
+}
+
 interface ServerResponseJSON {
   domain: string;
 }
@@ -34,6 +42,40 @@ const extractDomain = (str: string): string => {
   }
 
   return value;
+};
+
+const fetchTemplate = (
+  domain: string,
+  text: string,
+): Promise<[string, string]> => {
+  let fallbackDomain;
+
+  return fetch(
+    `https://${domain}/.well-known/webfinger?resource=${encodeURIComponent(`https://${domain}`)}`,
+  )
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Unexpected response");
+      }
+
+      // If the server is using a different domain/subdomain to serve the UI
+      fallbackDomain = new URL(response.url).host;
+
+      return response.json();
+    })
+    .then((json: WebfingerResponseJSON) => {
+      const link = json.links.find(
+        ({ rel }) => rel === "https://w3id.org/fep/3b86/Create",
+      );
+      const template =
+        link?.template ?? `https://${fallbackDomain}/share?text={content}`;
+      const redirectUrl = template.replace(
+        "{content}",
+        encodeURIComponent(text),
+      );
+
+      return [template, redirectUrl];
+    });
 };
 
 export const NewDomain: React.FC<{ onDismiss: () => void }> = () => {
@@ -118,15 +160,15 @@ export const NewDomain: React.FC<{ onDismiss: () => void }> = () => {
 
       setValue(domain);
       setShowResults(false);
-
-      const redirectUrl = `https://${domain}/share?text=${encodeURIComponent(text)}`;
-
       setSubmitting(true);
-      dispatch(addDomain(domain));
 
-      setTimeout(() => {
-        window.location.href = redirectUrl;
-      }, 100);
+      fetchTemplate(domain, text).then(([template, redirectUrl]) => {
+        dispatch(addDomain({ domain, template }));
+
+        setTimeout(() => {
+          window.location.href = redirectUrl;
+        }, 100);
+      });
     },
     [dispatch, text],
   );
@@ -141,14 +183,15 @@ export const NewDomain: React.FC<{ onDismiss: () => void }> = () => {
         return;
       }
 
-      const redirectUrl = `https://${domain}/share?text=${encodeURIComponent(text)}`;
-
       setSubmitting(true);
-      dispatch(addDomain(domain));
 
-      setTimeout(() => {
-        window.location.href = redirectUrl;
-      }, 100);
+      fetchTemplate(domain, text).then(([template, redirectUrl]) => {
+        dispatch(addDomain({ domain, template }));
+
+        setTimeout(() => {
+          window.location.href = redirectUrl;
+        }, 100);
+      });
     },
     [dispatch, text, domain],
   );
