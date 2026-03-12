@@ -1,6 +1,7 @@
 import "./App.css";
 import logo from "./assets/wordmark-white-text.svg";
 
+import { useEffect } from "react";
 import { FormattedMessage } from "react-intl";
 
 import { ShareSheet } from "./ShareSheet";
@@ -17,14 +18,31 @@ const Logo = () => (
 );
 
 function App() {
-  const hasText = useTextParam() !== null;
+  const text = useTextParam();
+
+  useEffect(() => {
+    let frame;
+
+    if (text !== null && "ontouchstart" in document.documentElement) {
+      frame = document.createElement("iframe");
+      frame.style.position = "fixed";
+      frame.src = `mastodon://share?text=${encodeURIComponent(text)}`;
+      document.body.appendChild(frame);
+    }
+
+    return () => {
+      if (frame) {
+        document.body.removeChild(frame);
+      }
+    };
+  }, [text]);
 
   return (
     <div className="w-full sm:max-w-lg py-12 sm:py-20 sm:m-auto flex flex-col items-center">
       <Logo />
 
       <div className="p-8 sm:min-w-lg rounded-2xl sm:bg-white">
-        {hasText ? <ShareSheet /> : <Instructions />}
+        {text !== null ? <ShareSheet /> : <Instructions />}
       </div>
 
       <div className="mt-12 sm:mt-30 text-slate-500 text-sm">
