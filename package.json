@@ -48,7 +48,7 @@
     "prettier": "3.6.2",
     "stylelint": "^17.4.0",
     "stylelint-plugin-logical-css": "^2.0.2",
-    "typescript": "~5.8.3",
+    "typescript": "~5.9.0",
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.2"
   },
